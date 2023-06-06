@@ -1,0 +1,176 @@
+package com.pcsetting.example;
+import java.util.*;
+
+public class ID {
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("請輸入ID");
+		String id = scanner.nextLine();
+		if(isID(id)) {
+			System.out.println("台灣身分證字號");
+			CheckID(id);
+		}
+		else if (isTaxID(id)) {
+			System.out.println("法人統編");
+			CheckTaxID(id);
+
+		}else if(isForeignTaxID(id)) {
+			System.out.println("外國人統一證號類");
+			CheckForeignTaxID(id);
+
+		}else if(isFTIN(id)) {
+			System.out.println("外國人稅籍編號");
+		}else if(NewUI(id)) {
+			System.out.println("外來人口新式統一證號");
+		}else {
+			System.out.println("這不符合任何一種格式");
+		}
+		scanner.close();
+	}
+	//判斷是否為身份證字號
+	public static boolean isID(String id) {
+		String pattern = "[A-Z]\\d{9}";
+		return id.matches(pattern);
+	}
+	//判斷是否為法人統編
+	public static boolean isTaxID(String id) {
+		String pattern = "\\d{8}";
+		return id.matches(pattern);
+	}
+	//判斷是否為外國人統一證號類
+	public static boolean isForeignTaxID(String id) {
+		String pattern = "[A-Z]{2}\\d{8}";
+		return id.matches(pattern);
+	}
+	//判斷是否為外國人稅籍編號
+	public static boolean isFTIN(String id) {
+		String pattern = "\\d{8}[A-Z]{2}";
+		return id.matches(pattern);
+	}
+	//判斷是否為外來人口新式統一證號
+	public static boolean NewUI(String id) {
+		String pattern = "[A-Z]\\d{9}";
+		return id.matches(pattern);
+	}
+	
+	//將英文字母轉為數值的方法
+		public static int CharToNum(char Char) {
+			int temp = 0;
+			temp = Character.getNumericValue(Char);
+			if(temp ==18) // 字母I 設定為34
+				temp = 34;
+			else if (temp ==24) //字母O 設定為35
+				temp = 35;
+			else if((temp>18)&&(temp<24)) // J~N前進1個數
+				temp = temp-1;
+			else if (temp>24)
+				temp = temp-2; //P~Z前進2個數		
+		return temp;
+		}
+	
+	//檢查身分證字號是否符合規定
+	public static boolean CheckID(String Cid) {
+		boolean result = false ;
+		char[]dig1 = Cid.toCharArray();//將Cid轉換為陣列組
+		int[]dig2 = new int[11];//儲存英文轉換數字後的身分證字號
+		int temp;
+		temp = CharToNum(dig1[0]);//將英文字母轉為數值
+		
+		//存入dig2
+		for(int i =1; i<10; i++) {
+			dig2[0]=temp / 10;
+			dig2[1]=temp % 10;
+			dig2[i+1] = Character.getNumericValue(dig1[i]);
+		}
+		//計算檢查碼
+		int sum =dig2[0];
+		int k =9;
+		for(int i =1; i<10; i++) {
+			sum = sum + dig2[i]*k;
+			k=k-1;
+		}
+		int check = 10-(sum%10);
+		if(check == dig2[10]) {
+			System.out.println("輸入符合個人身分字號類且檢碼正確");
+			result = true;
+		}else {
+			System.out.println("編碼為個人身分證字號類，檢核碼錯誤，正確檢核碼為:"+check);
+			result = false;
+		}
+		return result;
+	}
+	//檢查法人統編是否符合規定
+	public static boolean CheckTaxID(String Taxid) {
+		boolean result = false;
+		String weight = "12121241";
+		int[] dig1 = new int[Taxid.length()];//儲存統一編號數字陣列
+		for (int i = 0; i < Taxid.length(); i++){
+			dig1[i] = Taxid.charAt(i) - '0';
+		}
+		int temp = 0;
+		int sum = 0;
+		//計算檢查碼
+		for(int i = 0; i<8; i++) {
+			temp = dig1[i] * (weight.charAt(i) - '0');
+			sum +=(int)(temp / 10) +(temp % 10);
+		}
+		
+		if(dig1[6]==7) {//第七個數是否為七
+			if(sum%10 ==0 || ((sum+1)%10) == 0) {
+			   result = true;
+			   System.out.println("輸入符合法人統編類且符合規定");
+				}
+			else {
+				result = false;
+				System.out.println("編碼為法人統編類，但編碼不符合規定");
+				}
+			}else {
+				if(sum%10 ==0) {
+					result = true;
+					System.out.println("輸入符合法人統編類且符合規定");
+				}else {
+					result = false;
+					System.out.println("編碼為法人統編類，但編碼不符合規定");
+				}
+			}
+		return result;
+	}
+	//檢查外國人統一證號是否符合規定
+	public static boolean CheckForeignTaxID(String ForeignTaxID) {
+		boolean result = false;
+		char[]dig1 = ForeignTaxID.toCharArray();//將ForeignTaxID轉換為陣列組
+		int[]dig2 = new int[10];
+		String weight = "1987654321";
+		int temp1;
+		int temp2;
+		int sum = 0;
+		temp1 = CharToNum(dig1[0]);//將英文字母轉為數值
+		temp2 = CharToNum(dig1[1]);
+
+		//存入dig2
+		dig2[0]=temp1/10;
+		dig2[1]=temp1%10;
+		dig2[2]=temp2 % 10;
+		for(int i = 3; i<10; i++) {
+			dig2[i]=Character.getNumericValue(dig1[i-1]);
+			System.out.println(dig1[i-1]);
+		}
+	
+		//計算檢查碼
+		for(int i = 0; i<10; i++) {
+			int temp = dig2[i] * (weight.charAt(i) - '0');
+			sum +=(temp % 10);
+		}
+		System.out.println(sum);
+
+		int check = 10-(sum%10);
+		if(check == Character.getNumericValue(dig1[9])) {
+			System.out.println("符合規定");
+			result = true;
+		}else {
+			System.out.println("外國人統一證號類不符合規定");
+			result = false;
+		}
+		return result;
+	}
+}
