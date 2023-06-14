@@ -145,3 +145,43 @@ public class MyServlet extends HttpServlet {
     }
 }
 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Data Table Example</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.css"/>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                "ajax": {
+                    "url": "MyServlet",
+                    "dataSrc": "data"
+                },
+                "columns": [
+                    { "data": "0" },
+                    { "data": "1" },
+                    // 依此類推，加入其他欄位的設定
+                    // 依此類推，加入其他欄位的設定
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <table id="dataTable" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <!-- 依此類推，加入其他欄位的標題 -->
+            </tr>
+        </thead>
+    </table>
+</body>
+</html>
+
+
