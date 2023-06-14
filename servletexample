@@ -1,0 +1,76 @@
+package com.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/RegisterServletURL")
+public class RegisterServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    
+	private static final String driverName="com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static final String DB_URL = "jdbc:sqlserver://0.0.0.0:1433;DatabaseName=User;encrypt=true;trustServerCertificate=true;";
+	private static final String DB_USER = "sa";
+	private static final String DB_PASSWORD = "Isis940077";
+ 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		request.getRequestDispatcher("regist.jsp").forward(request, response);
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+		System.out.print("接受到請求");
+		
+		 response.setContentType("text/html;charset=UTF-8");
+
+	        // 取得表單資料
+	        String email = request.getParameter("email");
+	        String password = request.getParameter("password");
+	        	        
+	        try {
+				// 連線到MS SQL Server資料庫
+				 Class.forName(driverName);
+				 Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+
+				 // 建立預備語句，插入新使用者資料
+				 String sql = "INSERT INTO user_account (email, password) VALUES (?, ?)";
+				 PreparedStatement statement = conn.prepareStatement(sql);
+				 statement.setString(1, email);
+				 statement.setString(2, password);
+
+				 // 執行更新
+				 statement.executeUpdate();
+
+				 // 關閉連線和資源
+				 statement.close();
+				 conn.close();
+
+				 // 回傳成功訊息
+				 // 處理表單資料並產生回應訊息
+			        String message = "註冊成功";
+			        message += "Email：" + email;
+
+			        // 回應訊息給前端
+			        PrintWriter out = response.getWriter();
+			        out.println(message);
+				 } catch (ClassNotFoundException | SQLException e) {
+				 e.printStackTrace();
+				 // 回傳錯誤訊息
+				 String message = "註冊失敗，請重新嘗試";
+				 PrintWriter out = response.getWriter();
+				 out.println(message);
+				 }	       
+	}
+
+}
+
