@@ -71,3 +71,77 @@ public class LoginServlet extends HttpServlet {
         return isAuthenticated;
     }
 }
+
+
+
+
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/MyServlet")
+public class MyServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        // 資料庫連線設定
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=YourDatabaseName";
+        String username = "YourUsername";
+        String password = "YourPassword";
+
+        try {
+            // 載入 JDBC 驅動程式
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+
+            // 建立資料庫連線
+            Connection conn = DriverManager.getConnection(url, username, password);
+
+            // 建立 SQL 查詢
+            String sql = "SELECT * FROM YourTableName";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            // 將資料轉換成 JSON 格式
+            String jsonData = "{ \"data\": [";
+            while (rs.next()) {
+                jsonData += "[";
+                jsonData += "\"" + rs.getString("column1") + "\",";
+                jsonData += "\"" + rs.getString("column2") + "\",";
+                // 依此類推，加入其他欄位的資料
+                jsonData += "],";
+            }
+            jsonData = jsonData.substring(0, jsonData.length() - 1); // 移除最後一個逗號
+            jsonData += "]}";
+
+            // 關閉資源
+            rs.close();
+            stmt.close();
+            conn.close();
+
+            // 將資料傳送回前端
+            out.print(jsonData);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            out.close();
+        }
+    }
+}
+
