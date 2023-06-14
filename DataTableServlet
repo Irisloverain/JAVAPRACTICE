@@ -1,0 +1,100 @@
+//後端
+
+package com.servlet;
+
+import java.io.IOException;
+import org.json.*;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.json.*;
+@WebServlet("/DataTableServletURL")
+public class DataTableServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    class User {
+        private int id;
+        private String name;
+        private String email;
+        
+        public User(int id, String name, String email) {
+            this.id = id;
+            this.name = name;
+            this.email = email;
+        }
+        
+        // 省略getter和setter
+    }
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        JSONArray jsonArray = new JSONArray();     
+            JSONObject jsonRow = new JSONObject();
+            jsonRow.put("id", "id");
+            jsonRow.put("name", "yo");
+            jsonRow.put("email", "26@gmail.com");
+
+            // 依此類推，加入其他欄位的資料
+            jsonArray.put(jsonRow);
+        
+        JSONObject jsonData = new JSONObject();
+        jsonData.put("data", jsonArray);
+        
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+		System.out.print(jsonData);
+        PrintWriter out = response.getWriter();
+        out.print(jsonData);
+        out.flush();
+    }
+}
+
+
+//前端
+
+<%@ page language="java" contentType="text/html; charset=BIG5"
+    pageEncoding="BIG5"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DataTable Example</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.1/css/jquery.dataTables.min.css">
+</head>
+<body>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                ajax: {
+                    url: 'DataTableServletURL', // 將'servlet-url'替換為您的Java Servlet URL
+                    dataSrc: 'data'
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'name' },
+                    { data: 'email' }
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
+
