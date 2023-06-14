@@ -1,1 +1,80 @@
 
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>表單提交範例</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('form').submit(function(event) {
+        event.preventDefault(); // 防止表單自動提交
+
+        var formData = {
+          name: $('input[name=name]').val(),
+          email: $('input[name=email]').val()
+        };
+
+        $.ajax({
+          type: 'POST',
+          url: 'YourServletURL',
+          data: formData,
+          success: function(response) {
+            alert('伺服器回應：' + response);
+          },
+          error: function() {
+            alert('發生錯誤，請重試！');
+          }
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>表單</h2>
+  <form>
+    <label for="name">姓名：</label>
+    <input type="text" name="name" id="name" required>
+    <br><br>
+    <label for="email">Email：</label>
+    <input type="email" name="email" id="email" required>
+    <br><br>
+    <input type="submit" value="提交">
+  </form>
+</body>
+</html>
+
+
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/YourServletURL")
+public class YourServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+
+        // 取得表單資料
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+
+        // 處理表單資料並產生回應訊息
+        String message = "收到來自 " + name + " 的訊息！<br>";
+        message += "Email：" + email;
+
+        // 回應訊息給前端
+        PrintWriter out = response.getWriter();
+        out.println(message);
+    }
+}
