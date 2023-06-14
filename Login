@@ -185,3 +185,18 @@ public class MyServlet extends HttpServlet {
 </html>
 
 
+// 將資料轉換成 JSON 格式
+String jsonData = "{ \"data\": [";
+while (rs.next()) {
+    jsonData += "[";
+    jsonData += "\"" + rs.getString("column1") + "\",";
+    jsonData += "\"" + rs.getString("column2") + "\",";
+    // 依此類推，加入其他欄位的資料
+    jsonData += "],";
+}
+if (jsonData.endsWith(",")) {
+    jsonData = jsonData.substring(0, jsonData.length() - 1); // 移除最後一個逗號
+}
+jsonData += "]}";
+
+
