@@ -1,1 +1,93 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/QueryDataServlet")
+public class QueryDataServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    // 資料庫連線設定
+    private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=YourDatabaseName";
+    private static final String USER = "YourUsername";
+    private static final String PASS = "YourPassword";
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        
+        // 獲取查詢的ID參數
+        String idParam = request.getParameter("id");
+        int id = Integer.parseInt(idParam);
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            // 註冊JDBC驅動程式
+            Class.forName(JDBC_DRIVER);
+            
+            // 開啟資料庫連線
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            
+            // 準備查詢資料的SQL語句（包含WHERE子句）
+            String sql = "SELECT * FROM YourTableName WHERE id=?";
+            stmt = conn.prepareStatement(sql);
+            
+            // 設定參數值
+            stmt.setInt(1, id);
+            
+            // 執行查詢
+            rs = stmt.executeQuery();
+            
+            // 處理查詢結果
+            if (rs.next()) {
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                
+                out.println("ID: " + id + ", Name: " + name + ", Email: " + email);
+            } else {
+                out.println("找不到符合條件的資料");
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 關閉資源
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException se2) {
+                se2.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+}
 
