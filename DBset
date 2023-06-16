@@ -1,1 +1,25 @@
+import java.io.InputStream;
+import java.util.Properties;
 
+public class DatabaseConfig {
+    private static final String CONFIG_FILE = "config.properties";
+
+    public static void main(String[] args) {
+        Properties properties = new Properties();
+
+        try (InputStream input = DatabaseConfig.class.getClassLoader().getResourceAsStream(CONFIG_FILE)) {
+            properties.load(input);
+
+            // 讀取設定值
+            String driverName = properties.getProperty("driverName");
+            String dbUrl = properties.getProperty("DB_URL");
+            String dbUser = properties.getProperty("DB_User");
+            String dbPassword = properties.getProperty("DB_Password");
+
+            // 使用設定值進行資料庫連線等操作
+            // ...
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
