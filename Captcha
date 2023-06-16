@@ -71,3 +71,31 @@ public class CaptchaServlet extends HttpServlet {
         return captchaText.toString();
     }
 }
+
+
+@WebServlet("/verify")
+public class VerificationServlet extends HttpServlet {
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 獲取前端輸入的驗證碼
+        String userInput = request.getParameter("captcha");
+
+        // 從 Session 中取回之前存儲的驗證碼
+        HttpSession session = request.getSession();
+        String storedCaptcha = (String) session.getAttribute("captcha");
+
+        // 比對使用者輸入的驗證碼與存儲的驗證碼
+        boolean isValid = userInput != null && userInput.equalsIgnoreCase(storedCaptcha);
+
+        if (isValid) {
+            // 驗證碼正確，執行相應的操作
+            // ...
+            // 清除 Session 中的驗證碼
+            session.removeAttribute("captcha");
+        } else {
+            // 驗證碼錯誤，處理錯誤情況
+            // ...
+        }
+    }
+}
+
