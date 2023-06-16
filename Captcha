@@ -120,6 +120,29 @@ public class VerificationServlet extends HttpServlet {
 </body>
 </html>
 
+加入時間參數
+<!DOCTYPE html>
+<html>
+<head>
+    <title>加入時間參數到 src 路徑示例</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#myImage").click(function() {
+                var currentTime = new Date().getTime();
+                var imageUrl = "image.jpg?time=" + currentTime;
+                $("#myImage").attr("src", imageUrl);
+            });
+        });
+    </script>
+</head>
+<body>
+    <img id="myImage" src="image.jpg" alt="圖片">
+    <button>點擊更新圖片</button>
+</body>
+</html>
+
+
 
 
 
