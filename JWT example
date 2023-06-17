@@ -1,1 +1,51 @@
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Date;
+
+public class LoginServlet extends HttpServlet {
+    private static final String SECRET_KEY = "your_secret_key"; // 自訂的密鑰，用於簽署和驗證 JWT
+    private static final long EXPIRATION_TIME = 86400000; // JWT 的過期時間（單位：毫秒），這裡設置為 24 小時
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+
+        // 在實際應用中，你需要使用適當的方法來驗證使用者名稱和密碼
+        if (authenticate(username, password)) {
+            String token = generateToken(username);
+            resp.setHeader("Authorization", "Bearer " + token);
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+    }
+
+    private boolean authenticate(String username, String password) {
+        // 實現使用者驗證邏輯，例如檢查使用者名稱和密碼是否正確
+        // 如果驗證通過，返回 true；否則，返回 false
+        // 這裡僅作示例，你需要根據實際需求自行實作
+        return username.equals("john") && password.equals("password123");
+    }
+
+    private String generateToken(String username) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
+
+        String token = Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(expiration)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+
+        return token;
+    }
+}
 
