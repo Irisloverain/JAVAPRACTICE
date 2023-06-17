@@ -58,3 +58,34 @@ $(document).ready(function() {
                 // 登入失敗，顯示錯誤訊息
                 alert('登入失敗，請檢查帳號和
 
+
+
+
+
+3. 在其他頁面中，你可以使用JavaScript檢查Session中是否存在帳號，如果不存在，則自動跳轉至登入頁面。下面是一個示例：
+
+```javascript
+$(document).ready(function() {
+    // 在頁面載入時檢查使用者登入狀態
+    checkLoginStatus();
+
+    function checkLoginStatus() {
+        // 使用AJAX向後端發送請求檢查登入狀態
+        $.ajax({
+            type: 'GET',
+            url: 'checkLoginStatus', // 替換成後端檢查登入狀態的URL
+            success: function(response) {
+                if (response === 'loggedin') {
+                    // 使用者已登入，不需要執行任何動作
+                } else {
+                    // 使用者未登入，重新導向到登入頁面
+                    window.location.href = 'login.jsp'; // 替換成實際的登入頁面
+                }
+            },
+            error: function() {
+                // 請求失敗，假設使用者未登入
+                window.location.href = 'login.jsp'; // 替換成實際的登入頁面
+            }
+        });
+    }
+});
