@@ -89,3 +89,30 @@ $(document).ready(function() {
         });
     }
 });
+
+
+//檢察是否登入
+
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+
+public class CheckLoginStatusServlet extends HttpServlet {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // 取得Session物件
+        HttpSession session = request.getSession();
+        // 檢查Session中是否存在帳號
+        if (session.getAttribute("username") != null) {
+            // 使用者已登入
+            response.getWriter().write("loggedin");
+        } else {
+            // 使用者未登入
+            response.getWriter().write("loggedout");
+        }
+    }
+}
+
